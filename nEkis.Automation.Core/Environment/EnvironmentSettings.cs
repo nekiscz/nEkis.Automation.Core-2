@@ -28,6 +28,10 @@ namespace nEkis.Automation.Core.Environment
         /// <summary>
         /// Base url of test environment
         /// </summary>
-        public static string Url { get; } = coreSection.TestSettings["Url"].TestSetting;
+        public static string Url { get; } = coreSection.TestSettings["Url"].Value;
+        /// <summary>
+        /// Gets default browser
+        /// </summary>
+        public static string DefaultBrowser { get; } = coreSection.TestSettings["DefaultBrowser"].Value;
     }
 }

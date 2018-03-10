@@ -45,7 +45,7 @@ namespace nEkis.Automation.Core
         /// <param name="waitsec">Timeout setting for WebDriverWait</param>
         public static void CreateDriver(int waitsec = 20)
         {
-            var browser = TestContext.Parameters.Get("Browser", "ch");
+            var browser = TestContext.Parameters.Get("Browser", EnvironmentSettings.DefaultBrowser);
             Driver = CreateBrowser.Create(browser);
 
             Log.WriteLine($"Driver created ({Driver.GetType().Name})");
