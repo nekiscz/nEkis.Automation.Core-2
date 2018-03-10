@@ -1,4 +1,5 @@
 ﻿using nEkis.Automation.Core;
+using nEkis.Automation.Core.Environment;
 using System;
 
 namespace TestingProject
@@ -7,10 +8,12 @@ namespace TestingProject
     {
         static void Main(string[] args)
         {
-            for (int i = 0; i < 25; i++)
-            {
-                Console.WriteLine(SafeRandom.Next(0, 3));
-            }
+            Console.WriteLine(EnvironmentSettings.DateFormat);
+            Console.WriteLine(EnvironmentSettings.DateTimeFormat);
+            Console.WriteLine(EnvironmentSettings.ReadableDateFormat);
+            Console.WriteLine(EnvironmentSettings.ReadableDateTimeFormat);
+            Console.WriteLine(EnvironmentSettings.Url);
+
 
             Console.ReadLine();
         }
