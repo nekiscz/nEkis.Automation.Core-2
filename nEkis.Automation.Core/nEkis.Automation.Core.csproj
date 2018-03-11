@@ -51,6 +51,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Browser\BrowserExtensions\Cookies.cs" />
+    <Compile Include="Browser\Browser.cs" />
+    <Compile Include="Browser\BrowserExtensions\Frames.cs" />
     <Compile Include="Environment\Configuration\CoreSettings\CoreSections.cs" />
     <Compile Include="Environment\Configuration\CoreSettings\TestElement.cs" />
     <Compile Include="Environment\Configuration\CoreSettings\TestElementCollection.cs" />
@@ -65,14 +68,15 @@
   <ItemGroup>
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
-    <Compile Include="Browser\Browser.cs" />
     <Compile Include="Browser\CreateBrowser.cs" />
     <Compile Include="Environment\TestEnvironment.cs" />
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <Compile Include="SeleniumExtensions\GetMethods.cs" />
     <Compile Include="SeleniumExtensions\SetMethods.cs" />
-    <Compile Include="SeleniumExtensions\WaitMethods.cs" />
+    <Compile Include="Browser\BrowserExtensions\Waits.cs" />
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\Lorem.cs" />
     <Compile Include="Utilities\Screenshot.cs" />

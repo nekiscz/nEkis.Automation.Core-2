@@ -12,6 +12,7 @@ namespace nEkis.Automation.Core
     {
         /// <summary>
         /// Gets text from selected option or fields depending on element
+        /// <para>Is very slow, use with caution!</para>
         /// </summary>
         /// <param name="element">Any HTML element</param>
         /// <returns>Text of option, innerHTML or value</returns>
@@ -37,6 +38,7 @@ namespace nEkis.Automation.Core
 
         /// <summary>
         /// Gets text for each element in list
+        /// <para>Is very slow, use with caution!</para>
         /// </summary>
         /// <param name="elements">List of elements, can be any HTML elements (doesnt have to be consistent)</param>
         /// <returns>List of strings depending on element</returns>
@@ -84,7 +86,7 @@ namespace nEkis.Automation.Core
 
         /// <summary>
         /// Gets value indicating if element is displayed, if not present in DOM test will not fail
-        /// Can be used only in waits using transparent proxy directly
+        /// <para>Can be used only on wrapped elements!</para>
         /// </summary>
         /// <param name="element">Any HTML element</param>
         /// <returns>True if displayed</returns>
@@ -210,28 +212,6 @@ namespace nEkis.Automation.Core
                 return false;
             else
                 return true;
-        }
-
-        /// <summary>
-        /// Waits till is element single in DOM
-        /// </summary>
-        /// <param name="elements">List of elements, can be any HTML elements (doesnt have to be consistent)</param>
-        /// <returns>True if single</returns>
-        public static bool WaitTillSingle(this IList<IWebElement> elements)
-        {
-            Browser.Wait.Until(d => elements.Count == 1);
-            return true;
-        }
-
-        /// <summary>
-        /// Waits till there are no element in DOM
-        /// </summary>
-        /// <param name="elements">List of elements, can be any HTML elements (doesnt have to be consistent)</param>
-        /// <returns>True if no element is in DOM</returns>
-        public static bool WaitTillNone(this IList<IWebElement> elements)
-        {
-            Browser.Wait.Until(d => elements.Count == 0);
-            return true;
         }
 
 		/// <summary>

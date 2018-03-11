@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace nEkis.Automation.Core
         /// <param name="element">Inputs or other clearable elements</param>
         public static void ClearElement(this IWebElement element)
         {
-            element.WaitTillVisible().Clear();
+            element.Clear();
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace nEkis.Automation.Core
         /// <param name="text">Text to be entered</param>
         public static void EnterText(this IWebElement element, string text)
         {
-            element.WaitTillVisible().ClearElement();
+            element.ClearElement();
             element.SendKeys(text);
         }
 
@@ -77,7 +78,7 @@ namespace nEkis.Automation.Core
         /// <param name="text">Text to be entered</param>
         public static void SendText(this IWebElement element, string text)
         {
-            element.WaitTillVisible().SendKeys(text);
+            element.SendKeys(text);
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace nEkis.Automation.Core
         /// <param name="element">Any HTML element</param>
         public static void ClickElement(this IWebElement element)
         {
-            element.WaitTillClickable().Click();
+            element.Click();
         }
 
         /// <summary>
@@ -95,10 +96,9 @@ namespace nEkis.Automation.Core
         /// <param name="element">Any HTML element</param>
         /// <param name="x">Amount of pixels to move by X axis</param>
         /// <param name="y">Amount of pixels to move by Y axis</param>
-        public static void ClickElement(this IWebElement element, int x, int y)
+        public static void ClickElement(this IWebElement element, Actions actions, int x, int y)
         {
-            element.WaitTillClickable();
-            Browser.ActionsBuilder.MoveToElement(element, x, y).Click().Build().Perform();
+            actions.MoveToElement(element, x, y).Click().Build().Perform();
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace nEkis.Automation.Core
         /// <param name="index">Index of element in list</param>
         public static void ClickElement(this IList<IWebElement> elements, string index)
         {
-            elements[Convert.ToInt32(index)].WaitTillClickable().Click();
+            elements.ClickElement(Int32.Parse(index));
         }
 
         /// <summary>
@@ -122,24 +122,13 @@ namespace nEkis.Automation.Core
         }
 
         /// <summary>
-        /// Clicks on random element in list
-        /// </summary>
-        /// <param name="elements">Any HTML elements</param>
-        public static void ClickRandomElement(this IList<IWebElement> elements)
-        {
-            IWebElement element = elements[SafeRandom.Next(0, elements.Count - 1)];
-            element.ClickElement();
-        }
-
-        /// <summary>
         /// Clicks on random element in list with maximum position 
         /// </summary>
         /// <param name="elements">Any HTML elements</param>
         /// <param name="max">Maximum position of element in list</param>
-        public static void ClickRandomElement(this IList<IWebElement> elements, int max)
+        public static void ClickRandomElement(this IList<IWebElement> elements)
         {
-            IWebElement element = elements[SafeRandom.Next(0, elements.Count - (1 + max))];
-            element.WaitTillClickable().Click();
+            elements.ClickRandomElement(0, elements.Count);
         }
 
         /// <summary>
@@ -148,10 +137,10 @@ namespace nEkis.Automation.Core
         /// <param name="elements">Any HTML elements</param>
         /// <param name="min">Minimum position of element in list</param>
         /// <param name="max">Maximum position of element in list</param>
-        public static void ClickRandomElement(this IList<IWebElement> elements, int min, int max)
+        public static void ClickRandomElement(this IList<IWebElement> elements, int max, int min = 0)
         {
             IWebElement element = elements[SafeRandom.Next(min, max)];
-            element.WaitTillClickable().Click();
+            element.ClickElement();
         }
 
         /// <summary>
@@ -171,18 +160,18 @@ namespace nEkis.Automation.Core
         /// Right clicks on given element
         /// </summary>
         /// <param name="element">Any HTML element</param>
-        public static void RightClickElement(this IWebElement element)
+        public static void RightClickElement(this IWebElement element, Actions actions)
         {
-            Browser.ActionsBuilder.ContextClick(element).Build().Perform();
+            actions.ContextClick(element).Build().Perform();
         }
 
         /// <summary>
         /// Performs doubleclick 
         /// </summary>
         /// <param name="element">Any HTML element</param>
-        public static void DoubleClickElement(this IWebElement element)
+        public static void DoubleClickElement(this IWebElement element, Actions actions)
         {
-            Browser.ActionsBuilder.DoubleClick(element).Build().Perform();
+            actions.DoubleClick(element).Build().Perform();
         }
 
         /// <summary>
@@ -191,8 +180,7 @@ namespace nEkis.Automation.Core
         /// <param name="element">Select element</param>
         public static void SelectRandomElement(this IWebElement element)
         {
-            element.WaitTillOptionsPresent();
-            new SelectElement(element).SelectByIndex(SafeRandom.Next(1, element.FindElements(By.TagName("option")).Count - 1));
+            new SelectElement(element).SelectByIndex(SafeRandom.Next(1, element.FindElements(By.TagName("option")).Count));
         }
 
         /// <summary>
@@ -203,7 +191,6 @@ namespace nEkis.Automation.Core
         /// <param name="max">Maximum index of element</param>
         public static void SelectRandomElement(this IWebElement element, int min, int max)
         {
-            element.WaitTillOptionsPresent();
             new SelectElement(element).SelectByIndex(SafeRandom.Next(min, max));
         }
 
@@ -215,12 +202,11 @@ namespace nEkis.Automation.Core
         /// <param name="value">Value/index of option</param>
         public static void SelectElement(this IWebElement element, SelectBy by, string value)
         {
-            element.WaitTillOptionsPresent();
             if (by == SelectBy.Text)
                 new SelectElement(element).SelectByText(value);
-            if (by == SelectBy.Value)
+            else if (by == SelectBy.Value)
                 new SelectElement(element).SelectByValue(value);
-            if (by == SelectBy.Index)
+            else if (by == SelectBy.Index)
                 new SelectElement(element).SelectByIndex(Convert.ToInt32(value));
         }
 
@@ -231,19 +217,7 @@ namespace nEkis.Automation.Core
         /// <param name="index">Index of option</param>
         public static void SelectElement(this IWebElement element, int index)
         {
-            element.WaitTillOptionsPresent();
             new SelectElement(element).SelectByIndex(index);
-        }
-
-        /// <summary>
-        /// Clears element and enters short date within given limit
-        /// </summary>
-        /// <param name="element">Inputs or other clearable element</param>
-        /// <param name="minDays">Minimum limit to change date</param>
-        /// <param name="maxDays">Maximum limit to change date</param>
-        public static void EnterRandomDate(this IWebElement element, int minDays, int maxDays)
-        {
-            element.EnterText(DateTime.Today.AddDays(SafeRandom.Next(minDays, maxDays)).ToShortDateString());
         }
 
         /// <summary>
@@ -253,7 +227,7 @@ namespace nEkis.Automation.Core
         /// <param name="minDays">Minimum limit to change date, if zero date can be today</param>
         /// <param name="maxDays">Maximum limit to change date</param>
         /// <param name="clear">Should be element cleared before entering the date?</param>
-        public static void EnterRandomDate(this IWebElement element, int minDays, int maxDays, bool clear)
+        public static void EnterRandomDate(this IWebElement element, int minDays, int maxDays, bool clear = true)
         {
             if (clear)
                 element.EnterText(DateTime.Today.AddDays(SafeRandom.Next(minDays, maxDays)).ToShortDateString());
@@ -287,88 +261,23 @@ namespace nEkis.Automation.Core
         /// Moves cursor to element, position X:0 Y:0
         /// </summary>
         /// <param name="element">Any HTML element</param>
-        public static void MoveToMyElement(this IWebElement element)
+        public static void MoveToMyElement(this IWebElement element, Actions actions)
         {
-            Browser.ActionsBuilder.MoveToElement(element).Perform();
+            actions.MoveToElement(element).Perform();
         }
 
-        /// <summary>
-        /// Switches driver to this iframe
-        /// </summary>
-        /// <param name="element">Iframe element</param>
-        /// <returns>Element of iframe</returns>
-        public static IWebElement SwitchToIframe(this IWebElement element)
-        {
-            Browser.Wait.Until(r => element.IsDisplayed());
-            Browser.Driver.SwitchTo().Frame(element);
-            return element;
-        }
-
-        /// <summary>
-        /// Switches driver to this iframe, but first can switch to default
-        /// </summary>
-        /// <param name="element">Iframe element</param>
-        /// <param name="fromDefault">If true switches to default frame first</param>
-        /// <returns>Element if iframe</returns>
-        public static IWebElement SwitchToIframe(this IWebElement element, bool fromDefault)
-        {
-            if (fromDefault)
-            {
-                Browser.Driver.SwitchTo().DefaultContent();
-                Browser.Driver.SwitchTo().Frame(element);
-            }
-            else
-                Browser.Driver.SwitchTo().Frame(element);
-
-            return element;
-        }
-
-        /// <summary>
-        /// Waits for given time
-        /// </summary>
-        /// <param name="element">Any HTML element</param>
-        /// <param name="seconds">Number of seconds System should wait</param>
-        /// <returns>Given element</returns>
-        public static IWebElement PlainWait(this IWebElement element, int seconds)
-        {
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(seconds));
-            return element;
-        }
-
-        /// <summary>
-        /// Waits for browser alert to be displayed
-        /// </summary>
-        /// <param name="alert">Any HTML element</param>
-        /// <returns>Instance of the alert</returns>
-        public static IAlert WaitForAlert(this IAlert alert)
-        {
-            Browser.Wait.Until(ExpectedConditions.AlertIsPresent());
-            return alert;
-        }
-
-        /// <summary>
-        /// Sccrolls view to given element
-        /// </summary>
-        /// <param name="element">Any HTML element</param>
-        /// <returns>Given element</returns>
-        public static IWebElement ScrollElementToView(this IWebElement element)
-        {
-            string js = string.Format("window.scrollTo({0}, {1})", element.Location.X, element.Location.Y);
-            Browser.JsExecutor.ExecuteScript(js);
-
-            return element;
-        }
+        #region JS Executions
 
         /// <summary>
         /// Scrolls browser view to given element with offset
         /// </summary>
-        /// <param name="element">Any HTML element</param>
-        /// <param name="offset">Offset of pixels from top on Y axis</param>
+        /// <param name="jsExe">JavaScript executor for browser</param>
+        /// <param name="yOffset">Offset of pixels from top on Y axis</param>
         /// <returns>Given element</returns>
-        public static IWebElement ScrollElementToView(this IWebElement element, int offset)
+        public static IWebElement ScrollElementToView(this IWebElement element, IJavaScriptExecutor jsExe, int yOffset = 0)
         {
-            string js = string.Format("window.scrollTo({0}, {1})", element.Location.X, element.Location.Y - offset);
-            Browser.JsExecutor.ExecuteScript(js);
+            string js = $"window.scrollTo({element.Location.X}, {element.Location.Y - yOffset})";
+            jsExe.ExecuteScript(js);
 
             return element;
         }
@@ -377,12 +286,12 @@ namespace nEkis.Automation.Core
         /// Changes attribute of given element based on "JavaScriptLocator"
         /// Locator must be unique or first in DOM
         /// </summary>
-        /// <param name="element">Any HTML element</param>
+        /// <param name="jsExe">JavaScript executor for browser</param>
         /// <param name="locator">Locator available in JS</param>
         /// <param name="attribute">Name of attribute</param>
         /// <param name="value">Desired value</param>
         /// <returns>Given element</returns>
-        public static IWebElement SetAttribute(this IWebElement element, JavaScriptLocator locator, string attribute, string value)
+        public static IWebElement SetAttribute(this IWebElement element, IJavaScriptExecutor jsExe, JavaScriptLocator locator, string attribute, string value)
         {
 
             string js = string.Empty;
@@ -390,19 +299,21 @@ namespace nEkis.Automation.Core
             switch (locator)
             {
                 case JavaScriptLocator.Id:
-                    js = string.Format("document.getElementById('{0}').setAttribute('{1}', '{2}')", element.GetAttribute("id"), attribute, value);
+                    js = $"document.getElementById('{element.GetAttribute("id")}').setAttribute('{attribute}', '{value}')";
                     break;
                 case JavaScriptLocator.Name:
-                    js = string.Format("document.getElementsByName('{0}').setAttribute('{1}', '{2}')", element.GetAttribute("name"), attribute, value);
+                    js = $"document.getElementsByName('{element.GetAttribute("name")}').setAttribute('{attribute}', '{value}')";
                     break;
                 case JavaScriptLocator.Tag:
-                    js = string.Format("document.getElementsByTagName('{0}').setAttribute('{1}', '{2}')", element.GetElementTag(), attribute, value);
+                    js = $"document.getElementsByTagName('{element.GetElementTag()}').setAttribute('{attribute}', '{value}')";
                     break;
             }
 
-            Browser.JsExecutor.ExecuteScript(js);
+            jsExe.ExecuteScript(js);
 
             return element;
         }
+
+        #endregion
     }
 }

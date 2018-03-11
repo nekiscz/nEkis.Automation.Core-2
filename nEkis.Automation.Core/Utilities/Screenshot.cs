@@ -9,7 +9,7 @@ namespace nEkis.Automation.Core.Utilities
     /// <summary>
     /// Allows to take screenshots
     /// </summary>
-    public class Screenshot
+    public static class Screenshot
     {
         private static string ShotPath { get; set; }
         private static string ShotName
@@ -34,9 +34,9 @@ namespace nEkis.Automation.Core.Utilities
         /// Takes screenshot and saves it in desired location
         /// </summary>
         /// <param name="format">Format of image file</param>
-        public static void TakeScreenshot(ScreenshotImageFormat format = ScreenshotImageFormat.Png)
+        public static void TakeScreenshot(this Browser browser, ScreenshotImageFormat format = ScreenshotImageFormat.Png)
         {
-            OpenQA.Selenium.Screenshot shot = ((ITakesScreenshot)Browser.Driver).GetScreenshot();
+            OpenQA.Selenium.Screenshot shot = ((ITakesScreenshot)browser.Driver).GetScreenshot();
             shot.SaveAsFile(ShotPath + ShotName, format);
         }
     }
