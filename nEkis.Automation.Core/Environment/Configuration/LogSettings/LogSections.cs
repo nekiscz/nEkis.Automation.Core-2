@@ -6,12 +6,21 @@ namespace nEkis.Automation.Core.Environment.Configuration
     {
         public const string sectionName = "LogSettings";
 
-        [ConfigurationProperty("", IsDefaultCollection = true)]
+        [ConfigurationProperty("DateSettings", IsDefaultCollection = true)]
         public DateElementCollection DateSettings
         {
             get
             {
-                return this[""] as DateElementCollection;
+                return ((DateElementCollection)(base["DateSettings"]));
+            }
+        }
+
+        [ConfigurationProperty("PathSettings", IsDefaultCollection = false)]
+        public PathElementCollection PathSettings
+        {
+            get
+            {
+                return ((PathElementCollection)(base["PathSettings"]));
             }
         }
 

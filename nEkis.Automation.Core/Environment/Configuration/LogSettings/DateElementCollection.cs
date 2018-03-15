@@ -2,31 +2,28 @@
 
 namespace nEkis.Automation.Core.Environment.Configuration
 {
+    [ConfigurationCollection(typeof(DateElement))]
     internal class DateElementCollection : ConfigurationElementCollection
     {
-        public DateElementCollection()
-        {
-            this.AddElementName = "DateSettings";
-        }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return (element as DateElement).DateFormat;
+            return ((DateElement)element).DateFormat;
         }
 
         protected override ConfigurationElement CreateNewElement()
         {
             return new DateElement();
-        }
+        }   
 
         public new DateElement this[string key]
         {
-            get { return base.BaseGet(key) as DateElement; }
+            get { return (DateElement)BaseGet(key); }
         }
 
-        public DateElement this[int ind]
+        public DateElement this[int index]
         {
-            get { return base.BaseGet(ind) as DateElement; }
+            get { return (DateElement)BaseGet(index); }
         }
     }
 }

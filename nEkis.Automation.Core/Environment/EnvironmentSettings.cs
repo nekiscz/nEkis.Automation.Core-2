@@ -26,6 +26,11 @@ namespace nEkis.Automation.Core.Environment
         /// </summary>
         public static string ReadableDateTimeFormat { get; } = logSection.DateSettings["ReadableDateTimeFormat"].Format;
         /// <summary>
+        /// Path to sceenshot folder
+        /// </summary>
+        public static string ScreenshotPath { get; } = logSection.PathSettings["Screenshots"].Path;
+        public static string LogPath { get; } = logSection.PathSettings["Logs"].Path;
+        /// <summary>
         /// Base url of test environment
         /// </summary>
         public static string Url { get; } = coreSection.TestSettings["Url"].Value;
